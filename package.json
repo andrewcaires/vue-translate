@@ -1,0 +1,35 @@
+{
+  "name": "@andrewcaires/vue-translate",
+  "version": "1.0.0",
+  "description": "VueJS plugin for translation",
+  "main": "dist/vue-translate.umd.js",
+  "module": "dist/vue-translate.esm.js",
+  "unpkg": "dist/vue-translate.min.js",
+  "types": "dist/vue-translate.d.ts",
+  "scripts": {
+    "build": "rollup -c build/rollup.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrewcaires/vue-translate.git"
+  },
+  "keywords": [
+    "vue",
+    "vue-translate"
+  ],
+  "author": "Andrew Caires",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andrewcaires/vue-translate/issues"
+  },
+  "homepage": "https://github.com/andrewcaires/vue-translate#readme",
+  "dependencies": {
+    "vue": "^2.6.14"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^21.0.0",
+    "@rollup/plugin-typescript": "^8.2.5",
+    "rollup": "^2.58.0",
+    "rollup-plugin-terser": "^7.0.2"
+  }
+}
