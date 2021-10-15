@@ -1,6 +1,6 @@
 {
   "name": "@andrewcaires/vue-translate",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "VueJS plugin for translation",
   "main": "dist/vue-translate.umd.js",
   "module": "dist/vue-translate.esm.js",

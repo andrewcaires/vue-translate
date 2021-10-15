@@ -6,82 +6,87 @@ export interface VueTranslateOptions {
 }
 
 export type VueTranslateLocale = { [key: string]: string }
-export type VueTranslateParams = { [key: string]: string }
 export type VueTranslateLocales = { [key: string]: VueTranslateLocale }
+export type VueTranslateParameters = { [key: string]: string | number | boolean }
 
-let locale: string | undefined;
-let locales: VueTranslateLocales;
+class Translate {
 
-const forceUpdate = (components: Array<Vue>): boolean => {
+  private options: VueTranslateOptions;
 
-  components.forEach((component) => {
+  constructor(options: VueTranslateOptions) {
 
-    component.$forceUpdate();
+    this.options = options;
+  }
 
-    forceUpdate(component.$children);
-  });
+  current(): VueTranslateLocale {
 
-  return true;
-}
+    return this.options.locale && this.options.locales && this.options.locales[this.options.locale] || {};
+  }
 
-const getCurrent = (): VueTranslateLocale => {
+  locale(value: string): boolean {
 
-  return locale && locales[locale] || {};
-}
+    if (this.options.locale != value) {
 
-const install = (vue: any, options: VueTranslateOptions = {}): void => {
+      this.options.locale = value;
 
-  locale = options.locale;
-  locales = options.locales || {};
+      return true;
+    }
 
-  Vue.mixin({
+    return false;
+  }
 
-    methods: {
+  translate(message: string, options: VueTranslateParameters = {}): string {
 
-      $t: toTranslate,
+    const messages = this.current();
 
-      $locale(value: string) {
+    message = messages[message] || message;
 
-        return setLocale(value) && forceUpdate(this.$root.$children);
-      },
-    },
-  });
-}
+    return message.replace(/{[0-9a-zA-Z]+}/g, (value: string) => {
 
-const setLocale = (value: string): boolean => {
+      value = value.substring(1, value.length - 1);
 
-  if (locale != value) {
+      return options && options[value]?.toString() || `%${value}%`;
+    });
+  }
 
-    locale = value;
+  update(components: Array<Vue>): boolean {
+
+    components.forEach((component) => {
+
+      component.$forceUpdate();
+
+      this.update(component.$children);
+    });
 
     return true;
   }
-
-  return false;
 }
 
-const toTranslate = (message: string, options?: VueTranslateParams) => {
+export const VueTranslate: PluginObject<VueTranslateOptions> = {
 
-  options = options || {};
+  install(vue: any, options: VueTranslateOptions = {}): void {
 
-  const messages = getCurrent();
+    const plugin = new Translate(options);
 
-  message = messages[message] || message;
+    Vue.mixin({
 
-  return message.replace(/{[0-9a-zA-Z]+}/g, (value) => {
+      methods: {
 
-    value = value.substring(1, value.length - 1);
+        $t: plugin.translate.bind(plugin),
 
-    return options && options[value] || `%${value}%`;
-  });
-}
+        $locale(value: string) {
 
-export const VueTranslate: PluginObject<VueTranslateOptions> = { install };
+          return plugin.locale(value) && plugin.update(this.$root.$children);
+        },
+      },
+    });
+  },
+};
 
 declare module 'vue/types/vue' {
   interface Vue {
-    $t: typeof toTranslate;
-    $locale: typeof setLocale;
+    $t: typeof Translate.prototype.translate;
+    $locale: typeof Translate.prototype.locale;
   }
 }
 
