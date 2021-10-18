@@ -62,9 +62,13 @@ class Translate {
   }
 }
 
+let installed = false;
+
 export const VueTranslate: PluginObject<VueTranslateOptions> = {
 
   install(vue: any, options: VueTranslateOptions = {}): void {
+
+    if (installed) { return; } else { installed = true; }
 
     const plugin = new Translate(options);
 
