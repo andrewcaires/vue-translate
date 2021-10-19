@@ -1,4 +1,4 @@
-import Vue, { PluginObject } from 'vue';
+import Vue from 'vue';
 
 export interface VueTranslateOptions {
   locale?: string;
@@ -9,7 +9,9 @@ export type VueTranslateLocale = { [key: string]: string }
 export type VueTranslateLocales = { [key: string]: VueTranslateLocale }
 export type VueTranslateParameters = { [key: string]: string | number | boolean }
 
-class Translate {
+let installed = false;
+
+export class VueTranslate {
 
   private options: VueTranslateOptions;
 
@@ -60,17 +62,12 @@ class Translate {
 
     return true;
   }
-}
 
-let installed = false;
-
-export const VueTranslate: PluginObject<VueTranslateOptions> = {
-
-  install(vue: any, options: VueTranslateOptions = {}): void {
+  static install(vue: any, options: VueTranslateOptions = {}): void {
 
     if (installed) { return; } else { installed = true; }
 
-    const plugin = new Translate(options);
+    const plugin = new VueTranslate(options);
 
     Vue.mixin({
 
@@ -84,13 +81,13 @@ export const VueTranslate: PluginObject<VueTranslateOptions> = {
         },
       },
     });
-  },
+  }
 };
 
 declare module 'vue/types/vue' {
   interface Vue {
-    $t: typeof Translate.prototype.translate;
-    $locale: typeof Translate.prototype.locale;
+    $t: typeof VueTranslate.prototype.translate;
+    $locale: typeof VueTranslate.prototype.locale;
   }
 }
 
