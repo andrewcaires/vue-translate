@@ -69,11 +69,13 @@ export class VueTranslate {
 
     const plugin = new VueTranslate(options);
 
+    Vue.$translate = plugin.translate.bind(plugin);
+
     Vue.mixin({
 
       methods: {
 
-        $t: plugin.translate.bind(plugin),
+        $t: Vue.$translate,
 
         $locale(value: string) {
 
@@ -88,6 +90,9 @@ declare module 'vue/types/vue' {
   interface Vue {
     $t: typeof VueTranslate.prototype.translate;
     $locale: typeof VueTranslate.prototype.locale;
+  }
+  interface VueConstructor {
+    $translate: typeof VueTranslate.prototype.translate;
   }
 }
 
